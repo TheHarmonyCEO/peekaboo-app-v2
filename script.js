@@ -3,25 +3,43 @@
    ========================================= */
 const bgm = new Audio('bgm.mp3');
 bgm.loop = true;
-bgm.volume = 0.2; // BGMの音量を20%に下げる（声を目立たせるため）
 
 const openSe = new Audio('open.mp3');
-openSe.volume = 0.6; // カーテンの音を60%に下げる
-
 const popSe = new Audio('pop.mp3');
-popSe.volume = 0.6; // 絵文字が出る音を60%に下げる
 
 /* =========================================
    2. ゲームロジック
    ========================================= */
+// 数字の絵文字を含めたお子様向け絵文字リスト
 const items = [
-  { emoji: '🐶', name: 'いぬ' },
-  { emoji: '🐱', name: 'ねこ' },
-  { emoji: '🚗', name: 'くるま' },
-  { emoji: '🍎', name: 'りんご' },
-  { emoji: '🐘', name: 'ぞう' },
-  { emoji: '🚃', name: 'でんしゃ' },
-  { emoji: '🐸', name: 'かえる' }
+  // ユーザー作成リスト
+  { emoji: '🐶', name: 'いぬ' }, { emoji: '🐱', name: 'ねこ' }, { emoji: '🐭', name: 'ねずみ' },
+  { emoji: '🐰', name: 'うさぎ' }, { emoji: '🦊', name: 'きつね' }, { emoji: '🐻', name: 'くま' },
+  { emoji: '🐼', name: 'ぱんだ' }, { emoji: '🐯', name: 'とら' }, { emoji: '🦁', name: 'らいおん' },
+  { emoji: '🐮', name: 'うし' }, { emoji: '🐷', name: 'ぶた' }, { emoji: '🐸', name: 'かえる' },
+  { emoji: '🐵', name: 'さる' }, { emoji: '🐧', name: 'ぺんぎん' }, { emoji: '🐤', name: 'ひよこ' },
+  { emoji: '🐘', name: 'ぞう' }, { emoji: '🦒', name: 'きりん' },
+  { emoji: '🍎', name: 'りんご' }, { emoji: '🍊', name: 'みかん' }, { emoji: '🍌', name: 'ばなな' },
+  { emoji: '🍉', name: 'すいか' }, { emoji: '🍇', name: 'ぶどう' }, { emoji: '🍓', name: 'いちご' },
+  { emoji: '🍅', name: 'とまと' }, { emoji: '🍙', name: 'おにぎり' }, { emoji: '🍞', name: 'ぱん' },
+  { emoji: '🚗', name: 'くるま' }, { emoji: '🚌', name: 'ばす' }, { emoji: '🚓', name: 'ぱとかー' },
+  { emoji: '🚑', name: 'きゅうきゅうしゃ' }, { emoji: '🚒', name: 'しょうぼうしゃ' }, { emoji: '✈️', name: 'ひこうき' },
+  { emoji: '🚂', name: 'きしゃ' }, { emoji: '⛵', name: 'ふね' },
+  { emoji: '🌻', name: 'ひまわり' }, { emoji: '⭐', name: 'ほし' }, { emoji: '🎈', name: 'ふうせん' },
+  { emoji: '✂️', name: 'はさみ' }, { emoji: '🥄', name: 'すぷーん' },
+  
+  // 追加：数字の絵文字（ハッキリした発音用にひらがなを設定）
+  { emoji: '0️⃣', name: 'ぜろ' }, { emoji: '1️⃣', name: 'いち' }, { emoji: '2️⃣', name: 'に' },
+  { emoji: '3️⃣', name: 'さん' }, { emoji: '4️⃣', name: 'よん' }, { emoji: '5️⃣', name: 'ご' },
+  { emoji: '6️⃣', name: 'ろく' }, { emoji: '7️⃣', name: 'なな' }, { emoji: '8️⃣', name: 'はち' },
+  { emoji: '9️⃣', name: 'きゅう' }, { emoji: '🔟', name: 'じゅう' },
+
+  // 追加ピックアップ
+  { emoji: '👻', name: 'おばけ' }, { emoji: '💩', name: 'うんち' }, { emoji: '🤖', name: 'ろぼっと' },
+  { emoji: '☂️', name: 'かさ' }, { emoji: '🦋', name: 'ちょうちょ' }, { emoji: '🐞', name: 'てんとうむし' },
+  { emoji: '🐢', name: 'かめ' }, { emoji: '🐙', name: 'たこ' }, { emoji: '🐟', name: 'さかな' },
+  { emoji: '🐬', name: 'いるか' }, { emoji: '☀️', name: 'たいよう' }, { emoji: '🌙', name: 'つき' },
+  { emoji: '🌈', name: 'にじ' }, { emoji: '⛄️', name: 'ゆきだるま' }, { emoji: '🍰', name: 'けーき' }
 ];
 
 let currentItem = null;
@@ -81,13 +99,12 @@ function handleButtonTap(e) {
   
   buttonPressCount++;
 
-  // ひらがなを発話（音量を最大に設定）
   if ('speechSynthesis' in window) {
     speechSynthesis.cancel(); 
     const ut = new SpeechSynthesisUtterance(currentItem.name);
     ut.lang = 'ja-JP';
     ut.rate = 1.1; 
-    ut.volume = 1.0; // ←ここでアプリ側で出せる最大音量を指定しています
+    ut.volume = 1.0; 
     speechSynthesis.speak(ut);
   }
 
