@@ -1,0 +1,158 @@
+/* =========================================
+   リセット＆レスポンス・誤操作防止設定
+   ========================================= */
+* {
+  box-sizing: border-box;
+  touch-action: none; 
+  user-select: none; 
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #FFFACD;
+  font-family: 'Hiragino Maru Gothic ProN', 'Rounded M+ 1c', sans-serif;
+}
+
+/* =========================================
+   カーテンUI（織物の質感と深いヒダ）
+   ========================================= */
+#curtain-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: flex;
+  pointer-events: none;
+}
+
+/* より自然な有機的ゆらゆらアニメーション定義 */
+@keyframes curtain-organic-sway {
+  0%, 100% { transform: scaleY(1) rotate(0deg); }
+  25% { transform: scaleY(1.01) rotate(0.8deg); }
+  50% { transform: scaleY(1) rotate(0deg); }
+  75% { transform: scaleY(0.99) rotate(-0.8deg); }
+}
+
+.curtain {
+  width: 50%;
+  height: 100%;
+  /* ベースの色：カワイイピンク */
+  background-color: #ffb3c6;
+  position: relative; /* pseudo-elementのため */
+  overflow: hidden; /* テクスチャの containment */
+  transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: auto;
+  cursor: pointer;
+  /* 有機的ゆらゆらアニメーション適用 */
+  animation: curtain-organic-sway 4s infinite ease-in-out;
+  animation-play-state: running; 
+}
+
+/* 左カーテン：深いヒダと織物質感 */
+#curtain-left {
+  border-right: 2vw solid #d81b60; /* 可愛い縁取り */
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  transform-origin: left;
+  /* 複雑なグラデーションで織物の質感とヒダ（ドレープ）をシミュレート */
+  background-image: 
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 5%, transparent 10%),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 11px),
+    repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.01) 10px, rgba(0, 0, 0, 0.01) 11px);
+  background-size: 100% 100%, 100% 100%, 100% 100%; /* グラデーションの組み合わせ設定 */
+}
+
+/* 右カーテン：深いヒダ、対称 */
+#curtain-right {
+  border-left: 2vw solid #d81b60; /* 可愛い縁取り */
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  transform-origin: right;
+  /* 対称なグラデーション */
+  background-image: 
+    repeating-linear-gradient(-90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 5%, transparent 10%),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 11px),
+    repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.01) 10px, rgba(0, 0, 0, 0.01) 11px);
+  animation-delay: -2s; /* 位相をずらす */
+}
+
+/* カーテン上部に stylized ギャザー（プリーツ）を追加 */
+.curtain:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5vmin; /* 短いギャザー上部 */
+  background-color: transparent;
+  /* グラデーションで寄せられた布をシミュレート */
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 11px),
+    linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+  z-index: 1; /* テクスチャの上に配置 */
+}
+
+/* 開くときはアニメーションを止める */
+#curtain-left.open { transform: translateX(-100%); animation: none; }
+#curtain-right.open { transform: translateX(100%); animation: none; }
+
+/* =========================================
+   メインゲーム画面 UI
+   ========================================= */
+#game-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+#emoji-display {
+  font-size: 35vmin;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(5deg); }
+}
+.floating {
+  animation: float 2.5s infinite ease-in-out;
+}
+
+/* ひらがなボタン（デザイン大幅変更） */
+#word-btn {
+  position: absolute;
+  padding: 3vmin 6vmin;
+  font-size: 8vmin;
+  font-weight: bold;
+  background-color: white; /* ボタンの色：白 */
+  color: black; /* 文字を黒 */
+  border: 1vmin solid black; /* 枠線を黒、少し太く */
+  border-radius: 50px;
+  /* フラットでハッキリさせるため、既存の影は無くす */
+  box-shadow: none; 
+  cursor: pointer;
+  z-index: 20;
+  display: none;
+  transition: left 0.3s ease, top 0.3s ease, transform 0.1s ease; 
+}
+
+/* ボタンを押したときの動作：わずかに縮小 */
+#word-btn:active {
+  transform: scale(0.98); 
+  background-color: #f0f0f0; /* 押した感を出すためわずかにグレーに */
+}
